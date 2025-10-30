@@ -1,7 +1,9 @@
 #define REF_RESISTOR 10000.0
-                              
+#define LED 7
+#define SUPPLY A0                              
 void setup(){
     Serial.begin(9600);
+    pinMode(LED, OUTPUT);    
 }
 
 void loop(){
@@ -16,5 +18,6 @@ void loop(){
     Serial.print("V\tR_unknown: ");
     Serial.print(rUnknown, 2);
     Serial.println(" ohm");
+    digitalWrite(LED, HIGH);
     delay(500);
 }
