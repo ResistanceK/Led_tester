@@ -20,10 +20,16 @@ void loop() {
     float resist = (analog_A1 - analog_A0)/current;
 
     char buffer[100];
+    char v_buf[10], i_buf[10], r_buf[10], s_buf[10];
+
+    dtostrf(unknown_voltage, 4, 2, v_buf);
+    dtostrf(current, 6, 5, i_buf);
+    dtostrf(unknown_resistor, 5, 2, r_buf);
+    dtostrf(SUPPLY, 4, 2, s_buf);    
 
     snprintf(buffer, sizeof(buffer),
-         "{\"voltage\":%.2f, \"current\":%.5f, \"resistor\":%.2f, \"supply\":%.2f}",
-         unknown_voltage, current, unknown_resistor, SUPPLY);
+         "{\"voltage\":%s, \"current\":%s, \"resistor\":%s, \"supply\":%s}",
+         v_buf, i_buf, r_buf, s_buf);
     
     Serial.println(buffer);     
     
