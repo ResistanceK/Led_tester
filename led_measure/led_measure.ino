@@ -16,18 +16,16 @@ void loop() {
     float current = voltage_descent / STANDARD_RESISTOR;
     
     float unknown_voltage = analog_A1 - analog_A0;
-    float unknown_resistor = unknown_voltage/current;
-    
+    float unknown_resistor = unknown_voltage/current;   
     float resist = (analog_A1 - analog_A0)/current;
-    Serial.print("led_name=");
-    Serial.print("RED");
-    Serial.print(", supply_voltage=");
-    Serial.print(SUPPLY, 2);
-    Serial.print(", led_voltage=");
-    Serial.print(analog_A0, 3);
-    Serial.print(", led_current=");
-    Serial.print(current,6);
-    Serial.print(", resist=");
-    Serial.println(resist, 3);
+
+    char buffer[100];
+
+    snprintf(buffer, sizeof(buffer),
+         "{\"voltage\":%.2f, \"current\":%.5f, \"resistor\":%.2f, \"supply\":%.2f}",
+         unknown_voltage, current, unknown_resistor, SUPPLY);
+    
+    Serial.println(buffer);     
+    
     delay(1000);
 }
