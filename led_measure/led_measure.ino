@@ -17,7 +17,8 @@ void loop() {
     
     float unknown_voltage = analog_A1 - analog_A0;
     float unknown_resistor = unknown_voltage/current;
-
+    
+    float resist = (analog_A1 - analog_A0)/current;
     Serial.print("led_name=");
     Serial.print("RED");
     Serial.print(", supply_voltage=");
@@ -25,6 +26,8 @@ void loop() {
     Serial.print(", led_voltage=");
     Serial.print(analog_A0, 3);
     Serial.print(", led_current=");
-    Serial.println(current,6);
+    Serial.print(current,6);
+    Serial.print(", resist=");
+    Serial.println(resist, 3);
     delay(1000);
 }
