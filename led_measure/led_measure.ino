@@ -11,11 +11,12 @@ void loop() {
 
     float analog_A1 = digital_A1 * (5.0/1023.0);
     float analog_A0 = digital_A0 * (5.0 / 1023.0);
-    
-    float voltage_descent = SUPPLY - analog_A1;
+    Serial.println(analog_A1);
+    Serial.println(analog_A0);    
+    float voltage_descent = analog_A1 - analog_A0;
     float current = voltage_descent / STANDARD_RESISTOR;
     
-    float unknown_voltage = analog_A1 - analog_A0;
+    float unknown_voltage = SUPPLY - analog_A1;
     float unknown_resistor = unknown_voltage/current;   
     float resist = (analog_A1 - analog_A0)/current;
 
