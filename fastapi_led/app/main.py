@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import serial, json, threading, requests
@@ -7,7 +7,7 @@ from datetime import datetime
 
 app = FastAPI()
 
-# CORS 설정 (프론트엔드 연결 시 필요)
+# CORS 설정
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,7 +24,7 @@ class MeasureData(BaseModel):
     current: float
     resistor: float
 
-# 측정값 저장소 (메모리)
+# 측정값 저장소
 measurements: List[dict] = []
 
 ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
@@ -36,9 +36,10 @@ def read_from_arduino():
             continue
         try:
             data = json.loads(line)
+            print(f"Arduino 데이터 수신: {data}")  # 디버깅
             requests.post("http://localhost:8000/api/measure", json=data)
         except Exception as e:
-            print("JSON 오류:", line, e)
+            print(f"오류: {e}, 데이터: {line}")
 
 @app.on_event("startup")
 def startup_event():
@@ -46,12 +47,10 @@ def startup_event():
     thread.daemon = True
     thread.start()
 
-# 루트 엔드포인트
 @app.get("/")
 def root():
     return {"status": "ok", "message": "FastAPI LED Tester ready!"}
 
-# 측정 데이터 수신 엔드포인트 (추가!)
 @app.post("/api/measure")
 def receive_measure(data: MeasureData):
     measurement = data.dict()
@@ -62,16 +61,17 @@ def receive_measure(data: MeasureData):
     if len(measurements) > 100:
         measurements.pop(0)
     
+    print(f"측정값 저장됨: {measurement}")  # 디버깅
     return {"status": "success", "data": measurement}
 
-# 최신 측정값 조회
 @app.get("/api/latest")
 def get_latest():
     if not measurements:
-        return {"status": "no_data"}
+        raise HTTPException(status_code=404, detail="No data available yet")
     return measurements[-1]
 
-# 전체 측정값 조회
 @app.get("/api/all")
 def get_all():
     return {"count": len(measurements), "data": measurements}
+
+
